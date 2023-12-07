@@ -41,6 +41,20 @@ void MotionControl::synchronize() {
   planner.synchronize();
 }
 
+void MotionControl::req_axis_manager_abort(void) {
+  uint32_t log_cnt = 0;
+  LOG_I("Clear axisManager, sys_sta: %d\r\n", system_service.get_status());
+  planner.synchronize();
+  axisManager.req_abort = true;
+  while (axisManager.req_abort) {
+    vTaskDelay(10);
+    if (++log_cnt >=  100) {
+      log_cnt = 0;
+      LOG_I("Wait for axisManager req_abort flag to be clear, sys_sta: %d\r\n", system_service.get_status());
+    }
+  }
+}
+
 void MotionControl::blocking_move_to(float x, float y, float z, float feedrate) {
   float save_feedrate = feedrate_mm_s;
   xyze_pos_t xyz = current_position;

@@ -1979,7 +1979,10 @@ uint32_t Stepper::block_phase_isr() {
       }
       hal_timer_t et = HAL_timer_get_count(STEP_TIMER_NUM);
 
-      interval = (uint32_t)(axis_stepper.delta_time * STEPPER_TIMER_TICKS_PER_MS);
+      if (axis_stepper.delta_time < 0.001)
+        interval = 1;
+      else
+        interval = (uint32_t)(axis_stepper.delta_time * STEPPER_TIMER_TICKS_PER_MS);
 
       hal_timer_t dt = et - st;
       if (interval > 0 && (hal_timer_t)interval < dt) {
@@ -2039,7 +2042,7 @@ uint32_t Stepper::block_phase_isr() {
 
           power_loss.cur_line++; // this block motion finish
           // axisManager.abort();
-          axisManager.req_abort = true;
+          // axisManager.req_abort = true;
           is_start = true;
         }
         return interval;

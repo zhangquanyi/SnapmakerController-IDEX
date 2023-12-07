@@ -34,6 +34,7 @@
 #include "power_loss.h"
 #include "../module/filament_sensor.h"
 #include "exception.h"
+#include "motion_control.h"
 
 
 #define PAUSE_RESUME_MOVE_FEEDRATE_MMM (9000)
@@ -344,6 +345,8 @@ ErrCode PrintControl::start() {
     // motion_control.home_x();
   }
 
+  motion_control.req_axis_manager_abort();
+
   power_loss.stash_data.file_position = 0;
   power_loss.cur_line = power_loss.line_number_sum = 0;
   power_loss.next_req = 0;
@@ -477,6 +480,7 @@ ErrCode PrintControl::pause() {
   }
   else {
     // reset to normal
+    motion_control.req_axis_manager_abort();
     print_control.set_noise_mode(NOISE_NOIMAL_MODE);
     return E_SUCCESS;
   }
@@ -589,6 +593,8 @@ ErrCode PrintControl::stop() {
     set_print_offset(0, 0, 0);
     stop_work_time();
   }
+
+  motion_control.req_axis_manager_abort();
   // reset to normal
   print_control.set_noise_mode(NOISE_NOIMAL_MODE);
 

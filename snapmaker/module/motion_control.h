@@ -140,6 +140,7 @@ class MotionControl {
     bool is_sg_exti(sg_axis_e axis) {return GET_BIT(sg_exti_status, axis);}
     void clear_sg_exit() {sg_exti_status = 0;}
     void wait_G28();
+    void req_axis_manager_abort(void);
   public:
     uint16_t feedrate = 0;
     uint8_t sg_exti_status = 0;
